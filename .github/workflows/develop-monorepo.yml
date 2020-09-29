@@ -17,11 +17,10 @@ jobs:
       - uses: actions/setup-node@master
         with:
           node-version: 12.x
-      - run: ./node_modules/.bin/lerna bootstrap
-      - name: lint
-        run: ./node_modules/.bin/lerna run lint
-      - name: tests
-        run: ./node_modules/.bin/lerna run test -- --coverage
+      - run: npm ci
+      - run: npm run bootstrap -- --ci
+      - run: npm run lint
+      - run: npm run test -- --coverage
       - name: fix code coverage paths
         # https://community.sonarsource.com/t/code-coverage-doesnt-work-with-github-action/16747/5
         run: |
@@ -50,4 +49,4 @@ jobs:
       - uses: actions/setup-node@master
         with:
           node-version: 12.x
-      - run: ./node_modules/.bin/lerna version
+      - run: npm run release
