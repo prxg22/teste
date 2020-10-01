@@ -43,14 +43,18 @@ const getBaseVersions = async (base, initial = '0.0.0') => {
 }
 
 const forceBaseVersions = baseVersions => {
-  Object.entries(baseVersions).forEach(([packageName, version]) => {
-    const path = `./packages/${packageName}/package.json`
-    const headPackage = JSON.parse(fs.readFileSync(path))
-    headPackage.version = version
-    const forcedBasePackage = JSON.stringify(headPackage)
-    fs.unlinkSync(path)
-    fs.writeFileSync(path, forcedBasePackage)
-  })
+  return Promise.all(
+    Object.entries(baseVersions).map(async ([packageName, version]) => {
+      const path = `./packages/${packageName}/package.json`
+      const headPackage = JSON.parse(fs.readFileSync(path))
+      headPackage.version = version
+      const forcedBasePackage = JSON.stringify(headPackage)
+      fs.unlinkSync(path)
+      fs.writeFileSync(path, forcedBasePackage)
+      await exec(`git add .`)
+      return exec(`git commit --amend`)
+    }),
+  )
 }
 
 const bump = async () => {
@@ -67,7 +71,9 @@ const configGit = async head => {
 }
 
 const pushBumpedVersionAndTag = async head => {
-  await exec(`git push "${remote}" HEAD:${head}`)
+  await exec(`git st`)
+  await exec(`git tag`)
+  await exec(`git push -f "${remote}" HEAD:${head}`)
   await exec(`git push -f --tags`)
 }
 
@@ -79,7 +85,7 @@ const run = async () => {
   try {
     await configGit(head)
     const baseVersions = await getBaseVersions(base, initialVersion)
-    forceBaseVersions(baseVersions)
+    await forceBaseVersions(baseVersions)
     await bump()
     console.log(`bumped packages!`)
     await pushBumpedVersionAndTag(head)
