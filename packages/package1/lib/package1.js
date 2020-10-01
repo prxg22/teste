@@ -1,7 +1,7 @@
-'use strict';
+'use strict'
 
-module.exports = package1;
+module.exports = package1
 
 function package1() {
-    // TODO
+  console.log('package1')
 }
