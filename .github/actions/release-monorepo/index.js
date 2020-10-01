@@ -74,7 +74,7 @@ const pushBumpedVersionAndTag = async head => {
   await exec(`git status`)
   await exec(`git tag`)
   await exec(`git push -f "${remote}" HEAD:${head}`)
-  await exec(`git push -f --tags`)
+  await exec(`git push -f "${remote}" --tags`)
 }
 
 const run = async () => {
