@@ -20,13 +20,12 @@ const getBaseVersions = async (base, initial = '0.0.0') => {
 
   return packagesNames.reduce(async (packageJsons, packageName) => {
     const packagePath = `${packagesPath}/${packageName}`
-    if (!fs.statSync(packagePath).isDirectory) return
-
+    if (!fs.statSync(packagePath).isDirectory()) return
     try {
-      const pkgFile = await octokit.repos.getContents({
+      const pkgFile = await octokit.repos.getContent({
         ...context.repo,
         ref: base,
-        path: `${packagePath}/package.json`,
+        path: `packages/${packageName}/package.json`,
       })
 
       const content = Buffer.from(pkgFile.data.content, 'base64')
@@ -37,6 +36,7 @@ const getBaseVersions = async (base, initial = '0.0.0') => {
         [packageName]: version,
       }
     } catch (e) {
+      console.log(e)
       return packageJsons
     }
   }, {})
@@ -52,20 +52,14 @@ const forceBaseVersions = baseVersions => {
       fs.unlinkSync(path)
       fs.writeFileSync(path, forcedBasePackage)
 
-      console.log({
-        baseVersions,
-        headPackage,
-        package: JSON.parse(fs.readFileSync(path)),
-      })
-      await exec(`git add .`)
-      return exec(`git commit --amend`)
+      return exec(`git commit -a --amend --no-edit`)
     }),
   )
 }
 
 const bump = async () => {
   await exec(
-    `npx lerna version --conventional-commits --create-release github --no-push --yes`,
+    `npx lerna version --conventional-commits --create-release github --no-push --yes --force-git-tag`,
   )
 }
 
@@ -89,11 +83,13 @@ const run = async () => {
   try {
     await configGit(head)
     const baseVersions = await getBaseVersions(base, initialVersion)
+    console.log(`fetched base versions`, baseVersions)
     await forceBaseVersions(baseVersions)
+    console.log(`forced base versions in packages`)
     await bump()
     console.log(`bumped packages!`)
     await pushBumpedVersionAndTag(head)
-    console.log(`release pushed!`)
+    console.log(`pushed release!`)
   } catch (e) {
     core.setFailed(e)
   }
