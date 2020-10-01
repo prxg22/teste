@@ -51,6 +51,12 @@ const forceBaseVersions = baseVersions => {
       const forcedBasePackage = JSON.stringify(headPackage)
       fs.unlinkSync(path)
       fs.writeFileSync(path, forcedBasePackage)
+
+      console.log({
+        baseVersions,
+        headPackage,
+        package: JSON.parse(fs.readFileSync(path)),
+      })
       await exec(`git add .`)
       return exec(`git commit --amend`)
     }),
@@ -71,8 +77,6 @@ const configGit = async head => {
 }
 
 const pushBumpedVersionAndTag = async head => {
-  await exec(`git status`)
-  await exec(`git tag`)
   await exec(`git push -f "${remote}" HEAD:${head}`)
   await exec(`git push -f "${remote}" --tags`)
 }
