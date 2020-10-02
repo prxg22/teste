@@ -10,5 +10,6 @@
   },
   "publishConfig": {
     "directory": "dist"
-  }
+  },
+  "ignoreChanges": ["**/README.md", "**/CHANGELOG.md"]
 }
