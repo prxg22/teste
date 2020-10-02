@@ -18,7 +18,7 @@ const getBaseVersions = async (base, initial = '0.0.0') => {
   const packagesPath = './packages'
   const packagesNames = fs.readdirSync(packagesPath)
 
-  return packagesNames.reduce(async (packageJsons, packageName) => {
+  return packagesNames.reduce(async (baseVersions, packageName) => {
     const packagePath = `${packagesPath}/${packageName}`
     if (!fs.statSync(packagePath).isDirectory()) return
     try {
@@ -32,12 +32,12 @@ const getBaseVersions = async (base, initial = '0.0.0') => {
 
       const { version } = JSON.parse(content)
       return {
-        ...packageJsons,
+        ...baseVersions,
         [packageName]: version,
       }
     } catch (e) {
       console.log(e)
-      return packageJsons
+      return baseVersions
     }
   }, {})
 }
