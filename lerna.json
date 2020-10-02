@@ -5,7 +5,7 @@
     "version": {
       "conventionalCommits": true,
       "createRelease": "github",
-      "message": "chore: Release %s"
+      "message": "chore: Release:"
     }
   },
   "publishConfig": {
