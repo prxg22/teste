@@ -1,0 +1,29 @@
+{
+  "name": "package2",
+  "version": "1.0.0",
+  "description": "> TODO: description",
+  "author": "paulo giusti <paulo.giusti@lemon.energy>",
+  "homepage": "https://github.com/prxg22/teste#readme",
+  "license": "ISC",
+  "main": "lib/package2.js",
+  "directories": {
+    "lib": "lib",
+    "test": "__tests__"
+  },
+  "files": [
+    "lib"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/prxg22/teste.git"
+  },
+  "scripts": {
+    "test": "echo \"Error: run tests from root\" && exit 1"
+  },
+  "bugs": {
+    "url": "https://github.com/prxg22/teste/issues"
+  },
+  "dependencies": {
+    "package1": "^1.1.0"
+  }
+}
